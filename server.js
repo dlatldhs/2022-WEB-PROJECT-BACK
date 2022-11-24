@@ -1,6 +1,7 @@
-const express = require("express")
+const express = require("express");
+const mysql = require('mysql');
+const db = require("./db/index.js");
 const app = express()
-
 // require
 const userRouter = require('./routes/users');
 const loginRouter = require('./routes/login');
