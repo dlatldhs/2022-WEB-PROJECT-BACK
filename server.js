@@ -1,12 +1,14 @@
 const express = require("express");
 const mysql = require('mysql');
-const db = require("./db/index.js");
+// const db = require("./db/index.js");
 const app = express()
+const port = 3001;
 // require
 const userRouter = require('./routes/users');
 const loginRouter = require('./routes/login');
 const customerRouter = require('./routes/customer');
 const bodyParser = require('body-parser');
+const { response } = require("express");
 
 app.set('view engine', 'ejs')
 
@@ -23,4 +25,23 @@ app.get('/',(req,res) => {
     res.render('index.ejs',{text: "world" });
 });
 
-app.listen(3000)
+
+var db = mysql.createConnection({
+    host : 'localhost',
+    user : 'root',
+    password : '1234',
+    database : 'gomirang',
+})
+
+app.get('/product/:id', function (req, res) {
+    db.query("select * from Funding_product", function(err, rows, fields){
+        res.send(rows)
+    })
+    // response.send('user ' + req.params.id)
+    })
+
+
+app.listen(port, ()=> {
+    console.log(`Connection at http://localhost:${port}`);
+})
+
