@@ -35,10 +35,11 @@ var db = mysql.createConnection({
 
 app.get('/product/:id', function (req, res) {
     db.query("select * from Funding_product", function(err, rows, fields){
-        res.send(rows)
+        const product = rows;
+        const products = product.find(c => c.Funding_ID == parseInt(req.params.id));
+        res.send(products)
     })
-    // response.send('user ' + req.params.id)
-    })
+})
 
 
 app.listen(port, ()=> {
