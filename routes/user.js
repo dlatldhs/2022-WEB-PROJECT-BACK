@@ -1,9 +1,16 @@
 const express = require('express');
 const router = express.Router();
 const mysql = require('mysql');
-const db = require('../db/index.js');
+//const db = require('../db/index.js');
 const session = {};
 const {userList} = require('../model/user.js');
+
+let db = mysql.createConnection({
+    host : 'localhost',
+    user : 'root',
+    password : '1234',
+    database : 'gomirang',
+})
 
 router.use(logger);
 
@@ -23,27 +30,29 @@ router.get('/login',(req,res) => {
 
 router.post('/login',(req,res) => {
     const {id,pwd} = req.body;
-    const [user] = userList.filter((v)=>v.id === id && v.pw === pwd);
-    if ( user ) {
-        const privateKey = Math.floor(Math.random()*1000000000);
-        session[privateKey] = user;
-        console.log(session);
-        res.setHeader('Set-Cookie',`connect.id=${privateKey};path=/`);
-        res.send(`
-        <script>
+    db.query("select * from customers", function(err,rows,fields){
+        const user = rows;
+        const users = user.find(c => c.email == id & c.password == pwd );
+        console.log(users);
+        if ( users ) {
+            const privateKey = Math.floor(Math.random()*1000000000);
+            session[privateKey] = user;
+            console.log(session);
+            res.setHeader('Set-Cookie',`connect.id=${privateKey};path=/`);
+            res.send(`
+            <script>
             alert('로그인이 완료되었습니다!!!');
             location='/?id=${id}';
-        </script>
-        `)
-        // res.redirect(`/?id=${id}`);
-    } else {
-        // res.redirect('/user/login?msg=NotFound');
-        return res.send(`
+                      </script>
+            `)
+        } else {
+            return res.send(`
             <script>
             alert('등록되지 않은 회원입니다.');
             location='/user/login'
             </script>`);
-    }
+        }
+    })
 });
 
 router.get('/customer',(req,res)=>{
@@ -52,7 +61,7 @@ router.get('/customer',(req,res)=>{
 
 router.post('/customer',(req,res)=>{
     const sql =`insert into customers(email,password,name,address) VALUES('${req.body.email}','${req.body.pwd}','${req.body.c_name}','${req.body.address}')`
-    db.connection.query(sql);
+    db.query(sql);
     return res.render('user/customer');
 })
 
