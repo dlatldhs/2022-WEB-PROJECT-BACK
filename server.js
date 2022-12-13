@@ -34,12 +34,41 @@ var db = mysql.createConnection({
 })
 
 app.get('/product/:id', function (req, res) {
-    db.query("select * from Funding_product", function(err, rows, fields){
+    db.query("select * from funding_product", function(err, rows, fields){
         const product = rows;
-        const products = product.find(c => c.Funding_ID == parseInt(req.params.id));
+        const products = product.find(c => c.funding_id == parseInt(req.params.id));
         res.send(products)
     })
 })
+
+app.get('/reward/:id', function(req, res){
+    db.query("select * from reward", function(err, rows, fields){
+        const reward = rows;
+        const rewards = reward.find(c => c.funding_id == parseInt(req.params.id));
+        res.send(rewards)
+    })
+
+})
+
+app.get('/orderlist/:id', function(req, res){
+    db.query("select * from user_order_funding", function(err, rows, fields){
+        const order = rows;
+        const orders = order.find(c => c.funding_id == parseInt(req.params.id));
+        res.send(orders)
+        
+    })
+})
+
+app.get('/basket/:id', function(req, res){
+    db.query("select * from basket", function(err, rows, fields){
+        const basket = rows;
+        const baskets = basket.find(c => c.funding_id == parseInt(req.params.id));
+        res.send(baskets)
+    })
+})
+
+
+
 
 
 app.listen(port, ()=> {
